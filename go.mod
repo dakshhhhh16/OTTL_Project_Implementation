@@ -1,6 +1,6 @@
 module github.com/dakshhhhh16/ottl-gsoc-2026
 
-go 1.25.0
+go 1.21
 
 require (
 	github.com/alecthomas/participle/v2 v2.1.4

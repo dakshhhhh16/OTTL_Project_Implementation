@@ -74,7 +74,7 @@ go build ./...
 go test ./...
 ```
 
-Some tests will fail: the `GetNilSafe` computed-key case is a known TODO. All files compile cleanly and `go build ./...` exits zero.
+Some tests fail by design: the getNilSafe computed-key case is a known TODO. go build ./... exits cleanly.
 
 ## Upstream references
 
