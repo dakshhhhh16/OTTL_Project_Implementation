@@ -2,7 +2,7 @@
 
 A standalone proof-of-work implementation for GSoC 2026 that mirrors the structure of OpenTelemetry Collector Contrib's OTTL package. The goal is to validate key pieces of an OTTL stabilization proposal, including for-range grammar support, loop-scope design, nil-safe path traversal, compatibility corpus testing, and draft design documentation.
 
-This repository is not a fork. It is a focused experimental module to show practical, test-backed progress on language and runtime design decisions before upstream integration.
+This repository is not a fork. Built during the pre-GSoC community bonding period to show I can navigate the real codebase before the programme begins.
 
 ## Project structure
 
@@ -72,9 +72,9 @@ cd OTTL_Project_Implementation
 go mod tidy
 go build ./...
 go test ./...
+# Note: the getNilSafe computed-key branch is a known TODO - some nil_safe
+# tests will fail by design. All grammar and compatibility tests pass cleanly.
 ```
-
-Current status: go build ./... and go test ./... both pass. The getNilSafe computed-key branch is still a known TODO and currently returns an empty value by design.
 
 ## Upstream references
 
