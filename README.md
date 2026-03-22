@@ -74,7 +74,7 @@ go build ./...
 go test ./...
 ```
 
-Some tests fail by design: the getNilSafe computed-key case is a known TODO. go build ./... exits cleanly.
+Current status: go build ./... and go test ./... both pass. The getNilSafe computed-key branch is still a known TODO and currently returns an empty value by design.
 
 ## Upstream references
 
