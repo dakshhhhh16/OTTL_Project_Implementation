@@ -1,4 +1,4 @@
-# OTTL-gsoc-2026
+# OTTL-GSoC-2026
 
 A standalone proof-of-work implementation for GSoC 2026 that mirrors the structure of OpenTelemetry Collector Contrib's OTTL package. The goal is to validate key pieces of an OTTL stabilization proposal, including for-range grammar support, loop-scope design, nil-safe path traversal, compatibility corpus testing, and draft design documentation.
 
