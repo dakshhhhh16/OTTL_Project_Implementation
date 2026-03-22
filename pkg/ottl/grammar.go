@@ -261,7 +261,8 @@ type enumSymbol string
 // to prove the grammar design is valid and the participle tags are correct.
 //
 // Grammar:
-//   for <keyVar>, <valVar> in <iterable> [where <condition>] { <body>+ }
+//
+//	for <keyVar>, <valVar> in <iterable> [where <condition>] { <body>+ }
 //
 // Design notes:
 //   - KeyVar/ValVar use the Lowercase token, matching Go's own range idiom.
@@ -270,7 +271,10 @@ type enumSymbol string
 //   - The 'for' keyword is unambiguous because editor names start with
 //     Lowercase(Uppercase|Lowercase)* and "for" is now a reserved For token.
 type parsedForRange struct {
-	KeyVar string             `parser:"'for' @Lowercase ','"`
+	KeyVar string `parser:"'for' @Lowercase ','"`
+	// Note: 'in' in the tag below refers to the reserved In lexer token (defined in buildLexer),
+	// not a Lowercase match. Participle matches string literals against token values regardless
+	// of the token name, so 'in' correctly matches the In token.
 	ValVar string             `parser:"@Lowercase 'in'"`
 	Target value              `parser:"@@"`
 	Where  *booleanExpression `parser:"( 'where' @@ )?"`
@@ -319,6 +323,8 @@ func buildLexer() *lexer.StatefulDefinition {
 		{Name: `RBrace`, Pattern: `\}`},
 		{Name: `Colon`, Pattern: `\:`},
 		{Name: `Punct`, Pattern: `[,.\[\]]`},
+		// Uppercase pattern matches the real pkg/ottl/grammar.go exactly: [A-Z][A-Z0-9_]*.
+		// Enum symbols like SPAN_KIND_SERVER start with [A-Z] and include underscores via [A-Z0-9_]*.
 		{Name: `Uppercase`, Pattern: `[A-Z][A-Z0-9_]*`},
 		{Name: `Lowercase`, Pattern: `[a-z][a-z0-9_]*`},
 		{Name: "whitespace", Pattern: `\s+`},
@@ -329,6 +335,10 @@ func buildLexer() *lexer.StatefulDefinition {
 // grammarCustomError — copied from pkg/ottl/grammar.go
 // ---------------------------------------------------------------------------
 
+// grammarCustomErrorsVisitor is not implemented in this proof-of-work stub.
+// In the real codebase it walks the AST to validate constraints that are
+// syntactically valid but logically invalid (e.g. editors used as converters).
+// The struct below is retained for structural fidelity.
 type grammarCustomError struct {
 	errs []error
 }

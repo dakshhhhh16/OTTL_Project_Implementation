@@ -25,6 +25,9 @@ type TransformContext struct {
 	resource pcommon.Resource
 	scope    pcommon.InstrumentationScope
 
+	// Note: the real TransformContext also carries a cache pcommon.Map for
+	// inter-statement intermediate values. Omitted here for brevity.
+
 	// loopScope holds the variables bound by a for-range loop for the current iteration.
 	// It is nil for all non-loop statement executions — the nil check is free and means
 	// existing code paths pay exactly zero cost for the loop feature existing.
@@ -37,6 +40,7 @@ type TransformContext struct {
 }
 
 // NewTransformContext creates a new TransformContext.
+// loopScope is intentionally left nil — it is allocated on first for-range entry.
 func NewTransformContext(resource pcommon.Resource, scope pcommon.InstrumentationScope) TransformContext {
 	return TransformContext{
 		resource: resource,
@@ -62,7 +66,11 @@ func (ctx TransformContext) GetInstrumentationScope() pcommon.InstrumentationSco
 // This is called during path resolution BEFORE falling back to the normal
 // pdata accessor chain. Because the nil check on a map is free (just a
 // pointer compare), non-loop code paths pay zero cost.
-func (ctx TransformContext) GetLoopVar(name string) (pcommon.Value, bool) {
+//
+// Note: pcommon.Value is a reference type that wraps a shared underlying
+// pdata storage, so returning a copy is safe for mutation purposes — the
+// caller modifies the same underlying data.
+func (ctx *TransformContext) GetLoopVar(name string) (pcommon.Value, bool) {
 	if ctx.loopScope == nil {
 		return pcommon.NewValueEmpty(), false
 	}

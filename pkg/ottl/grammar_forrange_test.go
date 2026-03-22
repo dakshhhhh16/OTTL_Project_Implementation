@@ -33,6 +33,7 @@ func TestParsedForRangeStruct(t *testing.T) {
 			wantBody:   1,
 		},
 		{
+			// item as a bare path resolves via mathExprLiteral -> path fallback.
 			name:       "basic slice loop with indexed path",
 			input:      `for i, item in body["events"] { set(item, "processed") }`,
 			wantKeyVar: "i",
@@ -41,6 +42,9 @@ func TestParsedForRangeStruct(t *testing.T) {
 			wantBody:   1,
 		},
 		{
+			// This case exercises loop variables (k, v) as bare path expressions
+			// inside the where clause. A bare Lowercase token like k resolves as
+			// a single-field path via value -> mathExprLiteral -> path.
 			name:       "where-guarded loop",
 			input:      `for k, v in attributes where k != "password" { set(resource.attributes[k], v) }`,
 			wantKeyVar: "k",
@@ -52,6 +56,25 @@ func TestParsedForRangeStruct(t *testing.T) {
 			name:    "missing in keyword - should fail to parse",
 			input:   `for key, val attributes { set(resource.attributes["x"], val) }`,
 			wantErr: true,
+		},
+		{
+			// Tests that Body []*parsedStatement correctly accumulates
+			// multiple statements via @@*.
+			name:       "multi-statement body",
+			input:      `for key, val in attributes { set(resource.attributes[key], val) delete_key(attributes, key) }`,
+			wantKeyVar: "key",
+			wantValVar: "val",
+			wantWhere:  false,
+			wantBody:   2,
+		},
+		{
+			// Empty body — @@* matching zero times should produce nil/empty Body slice.
+			name:       "empty body",
+			input:      `for key, val in attributes { }`,
+			wantKeyVar: "key",
+			wantValVar: "val",
+			wantWhere:  false,
+			wantBody:   0,
 		},
 	}
 
@@ -95,20 +118,23 @@ func TestExistingStatementsStillParse(t *testing.T) {
 
 	// These are real OTTL statements from the transform processor README.
 	// They MUST all continue to parse correctly after we reserve for/in.
-	statements := []string{
-		`set(attributes["key"], "value")`,
-		`set(attributes["count"], 42)`,
-		`set(resource.attributes["env"], "prod") where attributes["level"] == "error"`,
-		`delete_key(attributes, "password")`,
-		`keep_keys(attributes, ["http.method", "http.status_code"])`,
-		`merge_maps(attributes, attributes, "upsert")`,
+	tests := []struct {
+		name string
+		stmt string
+	}{
+		{"set_string_attr", `set(attributes["key"], "value")`},
+		{"set_int_attr", `set(attributes["count"], 42)`},
+		{"set_where_clause", `set(resource.attributes["env"], "prod") where attributes["level"] == "error"`},
+		{"delete_key", `delete_key(attributes, "password")`},
+		{"keep_keys", `keep_keys(attributes, ["http.method", "http.status_code"])`},
+		{"merge_maps", `merge_maps(attributes, attributes, "upsert")`},
 	}
 
-	for _, stmt := range statements {
-		t.Run(stmt, func(t *testing.T) {
-			_, err := parser.ParseString("", stmt)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := parser.ParseString("", tt.stmt)
 			if err != nil {
-				t.Errorf("failed to parse existing statement %q: %v", stmt, err)
+				t.Errorf("failed to parse existing statement %q: %v", tt.stmt, err)
 			}
 		})
 	}

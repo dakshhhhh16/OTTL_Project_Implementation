@@ -39,6 +39,10 @@ type PathSegment struct {
 // index, or an unexpected value type, it returns pcommon.NewValueEmpty()
 // instead of panicking.
 //
+// Note: in the real implementation, path traversal is compiled into typed getter
+// functions via the ottl.Path[K] interface rather than interpreted at runtime.
+// This function demonstrates the nil-safety logic in isolation.
+//
 // Handled cases:
 //  1. Empty path (len(segments) == 0): return root as-is
 //  2. Missing map key: return empty
@@ -71,6 +75,8 @@ func GetNilSafe(root pcommon.Value, segments []PathSegment) pcommon.Value {
 				// Case 2: missing map key
 				return pcommon.NewValueEmpty()
 			}
+			// val is a reference into the underlying map storage — mutations
+			// through current propagate back to the original pcommon.Map.
 			current = val
 
 		} else if seg.SliceIndex != nil {
@@ -84,6 +90,8 @@ func GetNilSafe(root pcommon.Value, segments []PathSegment) pcommon.Value {
 				// Case 4: out-of-bounds slice index
 				return pcommon.NewValueEmpty()
 			}
+			// Slice.At() returns a reference into the underlying slice storage —
+			// mutations through current propagate back to the original pcommon.Slice.
 			current = current.Slice().At(idx)
 
 		} else {

@@ -130,6 +130,21 @@ func TestGetNilSafe(t *testing.T) {
 			wantType: pcommon.ValueTypeEmpty,
 		},
 		{
+			name: "empty value at depth 2 stops traversal",
+			root: func() pcommon.Value {
+				// key "x" exists but its value is Empty — traversing deeper should return empty
+				v := pcommon.NewValueEmpty()
+				m := v.SetEmptyMap()
+				m.PutEmpty("x")
+				return v
+			},
+			segments: []PathSegment{
+				{MapKey: strPtr("x")},
+				{MapKey: strPtr("deeper")},
+			},
+			wantType: pcommon.ValueTypeEmpty,
+		},
+		{
 			name: "deep traversal map -> map -> slice -> map",
 			root: func() pcommon.Value {
 				v := pcommon.NewValueEmpty()
