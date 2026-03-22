@@ -1,4 +1,4 @@
-# ottl-gsoc-2026
+# OTTL-gsoc-2026
 
 A standalone proof-of-work implementation for GSoC 2026 that mirrors the structure of OpenTelemetry Collector Contrib's OTTL package. The goal is to validate key pieces of an OTTL stabilization proposal, including for-range grammar support, loop-scope design, nil-safe path traversal, compatibility corpus testing, and draft design documentation.
 
@@ -7,7 +7,7 @@ This repository is not a fork. It is a focused experimental module to show pract
 ## Project structure
 
 ```text
-OTTL_Project_implementation/
+OTTL_Project_Implementation/
 ├── go.mod
 ├── go.sum
 ├── README.md
@@ -68,13 +68,16 @@ Not fully implemented yet:
 ## Build and test
 
 ```bash
+cd OTTL_Project_Implementation
 go mod tidy
 go build ./...
 go test ./...
 ```
 
+Some tests will fail: the `GetNilSafe` computed-key case is a known TODO. All files compile cleanly and `go build ./...` exits zero.
+
 ## Upstream references
 
-- https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30800
-- https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/29289
-- https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45365
+- https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30800 - GKE log normalisation motivating case, the for-range loop proposal.
+- https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/29289 - Looping design debate, three approaches considered.
+- https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45365 - OTTL path to 1.0 stabilization tracker.
