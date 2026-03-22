@@ -1,0 +1,10 @@
+# Where-clause conditional statements — backward-compatibility corpus
+# Any change to the OTTL grammar that causes these to parse differently is a regression.
+# Source: transform processor README.
+#
+# Expected: each line produces a parsedStatement with a non-nil WhereClause.
+
+set(attributes["env"], "production") where resource.attributes["deployment.environment"] == "prod"
+set(severity_text, "ERROR") where severity_number >= 17
+delete_key(attributes, "password") where attributes["password"] != nil
+set(attributes["flagged"], true) where attributes["level"] == "warn" or attributes["level"] == "error"

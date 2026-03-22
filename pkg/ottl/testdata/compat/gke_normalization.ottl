@@ -1,0 +1,36 @@
+# GKE log normalization — backward-compatibility corpus
+# Any change to the OTTL grammar that causes these to parse differently is a regression.
+# Source: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30800
+#
+# This is the 24-statement configuration that directly motivates the for-range
+# loop construct. Each line copies one resource attribute to the log record,
+# guarded by a nil check. With for-range, this entire block collapses to:
+#
+#   for key, val in resource.attributes where key != "k8s.cluster.name" {
+#     set(attributes[key], val)
+#   }
+
+set(attributes["cloud.provider"], resource.attributes["cloud.provider"]) where resource.attributes["cloud.provider"] != nil
+set(attributes["cloud.platform"], resource.attributes["cloud.platform"]) where resource.attributes["cloud.platform"] != nil
+set(attributes["cloud.account.id"], resource.attributes["cloud.account.id"]) where resource.attributes["cloud.account.id"] != nil
+set(attributes["cloud.region"], resource.attributes["cloud.region"]) where resource.attributes["cloud.region"] != nil
+set(attributes["cloud.availability_zone"], resource.attributes["cloud.availability_zone"]) where resource.attributes["cloud.availability_zone"] != nil
+set(attributes["k8s.cluster.name"], resource.attributes["k8s.cluster.name"]) where resource.attributes["k8s.cluster.name"] != nil
+set(attributes["k8s.namespace.name"], resource.attributes["k8s.namespace.name"]) where resource.attributes["k8s.namespace.name"] != nil
+set(attributes["k8s.pod.name"], resource.attributes["k8s.pod.name"]) where resource.attributes["k8s.pod.name"] != nil
+set(attributes["k8s.pod.uid"], resource.attributes["k8s.pod.uid"]) where resource.attributes["k8s.pod.uid"] != nil
+set(attributes["k8s.container.name"], resource.attributes["k8s.container.name"]) where resource.attributes["k8s.container.name"] != nil
+set(attributes["k8s.node.name"], resource.attributes["k8s.node.name"]) where resource.attributes["k8s.node.name"] != nil
+set(attributes["k8s.deployment.name"], resource.attributes["k8s.deployment.name"]) where resource.attributes["k8s.deployment.name"] != nil
+set(attributes["k8s.replicaset.name"], resource.attributes["k8s.replicaset.name"]) where resource.attributes["k8s.replicaset.name"] != nil
+set(attributes["k8s.statefulset.name"], resource.attributes["k8s.statefulset.name"]) where resource.attributes["k8s.statefulset.name"] != nil
+set(attributes["k8s.daemonset.name"], resource.attributes["k8s.daemonset.name"]) where resource.attributes["k8s.daemonset.name"] != nil
+set(attributes["k8s.job.name"], resource.attributes["k8s.job.name"]) where resource.attributes["k8s.job.name"] != nil
+set(attributes["k8s.cronjob.name"], resource.attributes["k8s.cronjob.name"]) where resource.attributes["k8s.cronjob.name"] != nil
+set(attributes["host.name"], resource.attributes["host.name"]) where resource.attributes["host.name"] != nil
+set(attributes["host.id"], resource.attributes["host.id"]) where resource.attributes["host.id"] != nil
+set(attributes["host.type"], resource.attributes["host.type"]) where resource.attributes["host.type"] != nil
+set(attributes["os.type"], resource.attributes["os.type"]) where resource.attributes["os.type"] != nil
+set(attributes["service.name"], resource.attributes["service.name"]) where resource.attributes["service.name"] != nil
+set(attributes["service.namespace"], resource.attributes["service.namespace"]) where resource.attributes["service.namespace"] != nil
+set(attributes["service.version"], resource.attributes["service.version"]) where resource.attributes["service.version"] != nil

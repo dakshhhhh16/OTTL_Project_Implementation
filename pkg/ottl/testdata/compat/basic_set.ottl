@@ -1,0 +1,10 @@
+# Basic set() statements — backward-compatibility corpus
+# Any change to the OTTL grammar that causes these to parse differently is a regression.
+# Source: transform processor README and existing pkg/ottl/ test fixtures.
+#
+# Expected: each line produces a parsedStatement with editor.Function == "set"
+
+set(attributes["http.method"], "GET")
+set(attributes["count"], 42)
+set(attributes["latency_ms"], 3.14)
+set(resource.attributes["service.name"], "my-service")

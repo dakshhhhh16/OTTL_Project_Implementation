@@ -1,0 +1,10 @@
+# Chained converter functions — backward-compatibility corpus
+# Any change to the OTTL grammar that causes these to parse differently is a regression.
+# Source: transform processor docs and ottlfuncs/ test cases.
+#
+# Expected: each line produces a parsedStatement with nested converter structs.
+
+set(attributes["length"], Len(attributes["message"]))
+set(attributes["upper"], ConvertCase(attributes["name"], "upper"))
+set(attributes["parsed"], ParseJSON(body))
+set(attributes["duration_ns"], Int(Duration(attributes["elapsed"], "ms")))
